@@ -1,51 +1,70 @@
 import React, { useState } from 'react';
 
 function App() {
-  const [showTomato, setShowTomato] = useState(true);
-  const [showLettuce, setShowLettuce] = useState(true);
-  const [showMeat, setShowMeat] = useState(true);
+  const [tomatoCount, setTomatoCount] = useState(0);
+  const [lettuceCount, setLettuceCount] = useState(0);
+  const [meatCount, setMeatCount] = useState(0);
+
+  const renderLayers = (Component, count) => {
+    return Array.from({ length: count }, (_, i) => <Component key={i} />);
+  };
 
   return (
     <div style={{ maxWidth: 320, margin: '40px auto', fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", textAlign: 'center' }}>
-      <h1 style={{ marginBottom: 24, color: '#4B5563' }}>Hello!!Create Your Custom Burger</h1>
+      <h1 style={{ marginBottom: 24, color: '#4B5563' }}> Build Your Burger</h1>
 
-      
-      <TopBread />
-      {showTomato && <Tomato />}
-      {showLettuce && <Lettuce />}
-      {showMeat && <Meat />}
-      <BottomBread />
+      {/* Burger */}
+      <div>
+        <TopBread />
+        {renderLayers(Lettuce, lettuceCount)}
+        {renderLayers(Tomato, tomatoCount)}
+        {renderLayers(Meat, meatCount)}
+        <BottomBread />
+      </div>
 
-
-      <div style={{ marginTop: 40, display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
-        <ToggleButton active={showTomato} onClick={() => setShowTomato(!showTomato)}>Tomato</ToggleButton>
-        <ToggleButton active={showLettuce} onClick={() => setShowLettuce(!showLettuce)}>Lettuce</ToggleButton>
-        <ToggleButton active={showMeat} onClick={() => setShowMeat(!showMeat)}>Meat</ToggleButton>
+      {/* Controls */}
+      <div style={{ marginTop: 40 }}>
+        <LayerControls
+          name="Tomato"
+          count={tomatoCount}
+          add={() => setTomatoCount(tomatoCount + 1)}
+          remove={() => setTomatoCount(Math.max(0, tomatoCount - 1))}
+        />
+        <LayerControls
+          name="Lettuce"
+          count={lettuceCount}
+          add={() => setLettuceCount(lettuceCount + 1)}
+          remove={() => setLettuceCount(Math.max(0, lettuceCount - 1))}
+        />
+        <LayerControls
+          name="Meat"
+          count={meatCount}
+          add={() => setMeatCount(meatCount + 1)}
+          remove={() => setMeatCount(Math.max(0, meatCount - 1))}
+        />
       </div>
     </div>
   );
 }
 
-const ToggleButton = ({ active, onClick, children }) => (
-  <button
-    onClick={onClick}
-    style={{
-      padding: '10px 18px',
-      borderRadius: 20,
-      border: '2px solid',
-      borderColor: active ? '#10B981' : '#9CA3AF',
-      backgroundColor: active ? '#D1FAE5' : '#F3F4F6',
-      color: active ? '#065F46' : '#6B7280',
-      cursor: 'pointer',
-      fontWeight: '600',
-      userSelect: 'none',
-      transition: 'all 0.2s ease-in-out',
-      minWidth: 100,
-    }}
-  >
-    {active ? `Remove ${children}` : `Add ${children}`}
-  </button>
+const LayerControls = ({ name, count, add, remove }) => (
+  <div style={{ marginBottom: 20 }}>
+    <h4 style={{ marginBottom: 8 }}>{name}: {count}</h4>
+    <button onClick={add} style={btnStyle('#10B981')}>Add</button>
+    <button onClick={remove} style={btnStyle('#EF4444')}>Remove</button>
+  </div>
 );
+
+const btnStyle = (color) => ({
+  padding: '8px 16px',
+  margin: '0 8px',
+  backgroundColor: color,
+  color: '#fff',
+  border: 'none',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  fontWeight: '600',
+});
 
 const TopBread = () => (
   <div style={{
@@ -90,8 +109,6 @@ const Meat = () => (
     boxShadow: 'inset 0 3px 7px rgba(0,0,0,0.7)',
   }} />
 );
-
-
 
 const BottomBread = () => (
   <div style={{
